@@ -1,0 +1,14 @@
+// -> mongo
+// -> -> exercise
+// -> -> user_data
+
+// -> postgres
+// -> -> lesson
+// -> -> user-lesson
+// -> -> vocabulary
+
+// -> redis
+// -> -> if exists leadboard from redis else from postgresql
+
+// -> kafka/rabbitmq
+// -> -> in updating user_data: XP, Streak, Games played count, (Achievements, Goals)

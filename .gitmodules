@@ -1,0 +1,6 @@
+[submodule "lingua-learning/lingua-protos"]
+	path = lingua-learning/lingua-protos
+	url = git@github.com:Azizbek-Qodirov/lingua-protos.git
+[submodule "lingua-progress/lingua-protos"]
+	path = lingua-progress/lingua-protos
+	url = git@github.com:Azizbek-Qodirov/lingua-protos.git
