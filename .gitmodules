@@ -7,3 +7,9 @@
 [submodule "lingua-gateway/lingua-protos"]
 	path = lingua-gateway/lingua-protos
 	url = git@github.com:Azizbek-Qodirov/lingua-protos.git
+[submodule "lingua-gateway-user/lingua-protos"]
+	path = lingua-gateway-user/lingua-protos
+	url = git@github.com:Azizbek-Qodirov/lingua-protos.git
+[submodule "lingua-gateway-admin/lingua-protos"]
+	path = lingua-gateway-admin/lingua-protos
+	url = git@github.com:Azizbek-Qodirov/lingua-protos.git
