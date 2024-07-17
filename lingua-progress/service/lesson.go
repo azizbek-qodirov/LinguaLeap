@@ -6,31 +6,15 @@ import (
 	st "progress-service/storage"
 )
 
-type LessonService struct {
-	storage st.Storage
-	pb.UnimplementedLessonServiceServer
+type UserLessonService struct {
+	storage st.StorageI
+	pb.UnimplementedUserLessonServiceServer
 }
 
-func NewLessonService(storage *st.Storage) *LessonService {
-	return &LessonService{storage: *storage}
+func NewUserLessonService(storage st.StorageI) *UserLessonService {
+	return &UserLessonService{storage: storage}
 }
 
-func (s *LessonService) CreateLesson(ctx context.Context, category *pb.LessonCReqGRes) (*pb.Void, error) {
-	return nil, nil
-}
-
-func (s *LessonService) GetByID(ctx context.Context, idReq *pb.ByID) (*pb.LessonCReqGRes, error) {
-	return nil, nil
-}
-
-func (s *LessonService) Update(ctx context.Context, category *pb.LessonUReq) (*pb.Void, error) {
-	return nil, nil
-}
-
-func (s *LessonService) Delete(ctx context.Context, idReq *pb.ByID) (*pb.Void, error) {
-	return nil, nil
-}
-
-func (s *LessonService) GetAll(ctx context.Context, allCategories *pb.LessonGAReq) (*pb.LessonGARes, error) {
-	return nil, nil
+func (s *UserLessonService) CreateUserLesson(ctx context.Context, category *pb.UserLessonCReq) (*pb.Void, error) {
+	return s.storage.UserLesson().Create(category)
 }

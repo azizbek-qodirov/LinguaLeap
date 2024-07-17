@@ -15,10 +15,11 @@ import (
 )
 
 type Storage struct {
-	DB          *sql.DB
-	LessonS     LessonI
-	VocabularyS VocabularyI
-	ExerciseS   ExerciseI
+	PgClient    *sql.DB
+	MongoClient *mongo.Client
+
+	UserLessonS UserLessonI
+	UserDataS   UserDataI
 }
 
 func NewPostgresStorage(config config.Config) (*Storage, error) {
@@ -43,22 +44,27 @@ func NewPostgresStorage(config config.Config) (*Storage, error) {
 		return nil, err
 	}
 
-	lm := managers.NewLessonManager(db)
-	em := managers.NewExerciseManager(client, config.MONGO_DB_NAME, config.MONGO_COLLECTION_NAME)
-	vm := managers.NewVocabularyManager(db)
+	ul := managers.NewUserLessonManager(db)
+	// ud := managers.NewUserDataManager(client, config.MONGO_DB_NAME, config.MONGO_COLLECTION_NAME)
 
 	log.Println("Successfully connected to the database")
 	return &Storage{
-		DB:          db,
-		LessonS:     lm,
-		ExerciseS:   em,
-		VocabularyS: vm,
+		PgClient:    db,
+		UserLessonS: ul,
+		// UserDataS:   ud,
 	}, nil
 }
 
-// func (s *Storage) Lesson() LessonI {
-// 	if s.LessonS == nil {
-// 		s.LessonS = managers.NewLessonManager(s.DB)
-// 	}
-// 	return s.LessonS
-// }
+func (s *Storage) UserData() UserDataI {
+	if s.UserDataS == nil {
+		s.UserDataS = managers.NewUserDataManager(s.MongoClient, config.Load().MONGO_DB_NAME, config.Load().MONGO_COLLECTION_NAME)
+	}
+	return s.UserDataS
+}
+
+func (s *Storage) UserLesson() UserLessonI {
+	if s.UserLessonS == nil {
+		s.UserLessonS = managers.NewUserLessonManager(s.PgClient)
+	}
+	return s.UserLessonS
+}

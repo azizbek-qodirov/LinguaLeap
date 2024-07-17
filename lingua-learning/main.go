@@ -18,7 +18,7 @@ func main() {
 	em := cf.NewErrorManager()
 	db, err := storage.NewPostgresStorage(config)
 	em.CheckErr(err)
-	defer db.DB.Close()
+	defer db.PgClient.Close()
 
 	listener, err := net.Listen("tcp", config.LEARNING_SERVICE_PORT)
 	if err != nil {
@@ -27,6 +27,8 @@ func main() {
 
 	s := grpc.NewServer()
 	pb.RegisterLessonServiceServer(s, service.NewLessonService(db))
+	pb.RegisterExerciseServiceServer(s, service.NewExerciseService(db))
+	pb.RegisterVocabularyServiceServer(s, service.NewVocabularyService(db))
 
 	log.Printf("server listening at %v", listener.Addr())
 	if err := s.Serve(listener); err != nil {

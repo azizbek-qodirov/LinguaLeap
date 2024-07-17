@@ -8,7 +8,6 @@ type StorageI interface {
 	Lesson() LessonI
 	Vocabulary() VocabularyI
 	Exercise() ExerciseI
-	// Tag() TagI
 }
 
 type LessonI interface {
@@ -32,9 +31,3 @@ type ExerciseI interface {
 	Delete(*pb.ByID) (*pb.Void, error)
 	GetAll(*pb.ExerciseGAReq) (*pb.ExerciseGARes, error)
 }
-
-// type TagI interface {
-// 	Create(*sql.Tx, *pb.TagCReqOrCRes) (*pb.TagCReqOrCRes, error)
-// 	Delete(*sql.Tx, *pb.TagGReqOrDReq) (*pb.Void, error)
-// 	GetPopular(*pb.Pagination) (*pb.TagPopularRes, error)
-// }

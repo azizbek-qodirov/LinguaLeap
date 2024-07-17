@@ -15,7 +15,9 @@ import (
 )
 
 type Storage struct {
-	DB          *sql.DB
+	PgClient    *sql.DB
+	MongoClient *mongo.Client
+
 	LessonS     LessonI
 	VocabularyS VocabularyI
 	ExerciseS   ExerciseI
@@ -49,16 +51,30 @@ func NewPostgresStorage(config config.Config) (*Storage, error) {
 
 	log.Println("Successfully connected to the database")
 	return &Storage{
-		DB:          db,
+		PgClient:    db,
 		LessonS:     lm,
 		ExerciseS:   em,
 		VocabularyS: vm,
 	}, nil
 }
 
-// func (s *Storage) Lesson() LessonI {
-// 	if s.LessonS == nil {
-// 		s.LessonS = managers.NewLessonManager(s.DB)
-// 	}
-// 	return s.LessonS
-// }
+func (s *Storage) Exercise() ExerciseI {
+	if s.ExerciseS == nil {
+		s.ExerciseS = managers.NewExerciseManager(s.MongoClient, config.Load().MONGO_DB_NAME, config.Load().MONGO_COLLECTION_NAME)
+	}
+	return s.ExerciseS
+}
+
+func (s *Storage) Lesson() LessonI {
+	if s.LessonS == nil {
+		s.LessonS = managers.NewLessonManager(s.PgClient)
+	}
+	return s.LessonS
+}
+
+func (s *Storage) Vocabulary() VocabularyI {
+	if s.VocabularyS == nil {
+		s.VocabularyS = managers.NewVocabularyManager(s.PgClient)
+	}
+	return s.VocabularyS
+}

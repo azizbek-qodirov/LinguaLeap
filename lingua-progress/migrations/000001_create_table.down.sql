@@ -1,1 +1,2 @@
-DROP TABLE IF EXISTS user_lessons;
+DROP TABLE user_data;
+DROP TABLE user_lessons;

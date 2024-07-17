@@ -4,3 +4,6 @@
 [submodule "lingua-progress/lingua-protos"]
 	path = lingua-progress/lingua-protos
 	url = git@github.com:Azizbek-Qodirov/lingua-protos.git
+[submodule "lingua-gateway/lingua-protos"]
+	path = lingua-gateway/lingua-protos
+	url = git@github.com:Azizbek-Qodirov/lingua-protos.git

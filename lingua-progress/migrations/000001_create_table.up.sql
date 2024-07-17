@@ -2,7 +2,7 @@ CREATE TABLE user_lessons (
     id UUID PRIMARY KEY,
     user_id UUID NOT NULL,
     lesson_id UUID NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE user_data (
