@@ -1,0 +1,572 @@
+definitions:
+  genprotos.ExerciseCReqUReqForSwagger:
+    properties:
+      correct_answer:
+        type: string
+      lesson_id:
+        type: string
+      options:
+        type: string
+      question:
+        type: string
+      type:
+        type: string
+    type: object
+  genprotos.ExerciseGARes:
+    properties:
+      count:
+        type: integer
+      exercises:
+        items:
+          $ref: '#/definitions/genprotos.ExerciseGResUReq'
+        type: array
+    type: object
+  genprotos.ExerciseGResUReq:
+    properties:
+      correct_answer:
+        type: string
+      id:
+        type: string
+      lesson_id:
+        type: string
+      options:
+        type: string
+      question:
+        type: string
+      type:
+        type: string
+    type: object
+  genprotos.LessonCReqForSwagger:
+    properties:
+      content:
+        type: string
+      lang_1:
+        type: string
+      lang_2:
+        type: string
+      level:
+        type: string
+      name:
+        type: string
+      order:
+        type: integer
+      title:
+        type: string
+    type: object
+  genprotos.LessonCReqGRes:
+    properties:
+      content:
+        type: string
+      id:
+        type: string
+      lang_1:
+        type: string
+      lang_2:
+        type: string
+      level:
+        type: string
+      name:
+        type: string
+      order:
+        type: integer
+      title:
+        type: string
+    type: object
+  genprotos.LessonGARes:
+    properties:
+      count:
+        type: integer
+      lessons:
+        items:
+          $ref: '#/definitions/genprotos.LessonCReqGRes'
+        type: array
+    type: object
+  genprotos.VocabulariesGARes:
+    properties:
+      vocabularies:
+        items:
+          $ref: '#/definitions/genprotos.ExerciseGResUReq'
+        type: array
+    type: object
+info:
+  contact: {}
+paths:
+  /exercise:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new exercise
+      parameters:
+      - description: Exercise data
+        in: body
+        name: exercise
+        required: true
+        schema:
+          $ref: '#/definitions/genprotos.ExerciseCReqUReqForSwagger'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Exercise created
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create Exercise
+      tags:
+      - Exercise
+  /exercise/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an exercise by its ID
+      parameters:
+      - description: Exercise ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Exercise deleted
+          schema:
+            type: string
+        "400":
+          description: Invalid exercise ID
+          schema:
+            type: string
+        "404":
+          description: Exercise not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete exercise
+      tags:
+      - Exercise
+    get:
+      consumes:
+      - application/json
+      description: Get an exercise by its ID
+      parameters:
+      - description: Exercise ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/genprotos.ExerciseGResUReq'
+        "400":
+          description: Invalid exercise ID
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get exercise
+      tags:
+      - Exercise
+    put:
+      consumes:
+      - application/json
+      description: Update an existing exercise
+      parameters:
+      - description: Exercise ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated exercise data
+        in: body
+        name: exercise
+        required: true
+        schema:
+          $ref: '#/definitions/genprotos.ExerciseCReqUReqForSwagger'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Exercise updated
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "404":
+          description: Exercise not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update exercise
+      tags:
+      - Exercise
+  /exercises:
+    get:
+      consumes:
+      - application/json
+      description: Get all exercises
+      parameters:
+      - description: Lesson ID
+        in: query
+        name: lesson_id
+        type: string
+      - description: Exercise type
+        in: query
+        name: type
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/genprotos.ExerciseGARes'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all exercises
+      tags:
+      - Exercise
+  /lesson:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new lesson
+      parameters:
+      - description: Lesson data
+        in: body
+        name: lesson
+        required: true
+        schema:
+          $ref: '#/definitions/genprotos.LessonCReqForSwagger'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lesson created
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create Lesson
+      tags:
+      - Lesson
+  /lesson/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a lesson by it's UUID
+      parameters:
+      - description: Lesson ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lesson deleted
+          schema:
+            type: string
+        "400":
+          description: Invalid lesson  ID
+          schema:
+            type: string
+        "404":
+          description: Lesson  not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete lesson
+      tags:
+      - Lesson
+    get:
+      consumes:
+      - application/json
+      description: Get a lesson by it's UUID
+      parameters:
+      - description: Leesson ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/genprotos.LessonCReqGRes'
+        "400":
+          description: Invalid lesson ID
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get lesson
+      tags:
+      - Lesson
+    put:
+      consumes:
+      - application/json
+      description: Update an existing lesson
+      parameters:
+      - description: Lesson ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated lesson data
+        in: body
+        name: lesson
+        required: true
+        schema:
+          $ref: '#/definitions/genprotos.LessonCReqForSwagger'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lesson updated
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "404":
+          description: Lesson not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update lesson
+      tags:
+      - Lesson
+  /lessons:
+    get:
+      consumes:
+      - application/json
+      description: Get all lessons
+      parameters:
+      - description: name
+        in: query
+        name: name
+        type: string
+      - description: lang_1
+        in: query
+        name: lang_1
+        type: string
+      - description: lang_2
+        in: query
+        name: lang_2
+        type: string
+      - description: level
+        in: query
+        name: level
+        type: string
+      - description: order
+        in: query
+        name: order
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/genprotos.LessonGARes'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all lessons
+      tags:
+      - Lesson
+  /vocabularies:
+    get:
+      consumes:
+      - application/json
+      description: Gets vocabularies
+      parameters:
+      - description: Lesson ID
+        in: query
+        name: lesson_id
+        type: string
+      - description: Exercise type
+        in: query
+        name: type
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/genprotos.VocabulariesGARes'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get Vocabularies
+      tags:
+      - Vocabulary
+  /vocabulary/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an exercise from the vocabulary
+      parameters:
+      - description: Exercise ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Exercise deleted from vocabulary
+          schema:
+            type: string
+        "400":
+          description: Invalid exercise ID
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete from Vocabulary
+      tags:
+      - Vocabulary
+    post:
+      consumes:
+      - application/json
+      description: Adds an exercise to the vocabulary
+      parameters:
+      - description: Exercise ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Exercise added to vocabulary
+          schema:
+            type: string
+        "400":
+          description: Invalid exercise ID
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Add to Vocabulary
+      tags:
+      - Vocabulary
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -9,8 +9,8 @@ import (
 )
 
 type Config struct {
-	AUTH_PORT          string
-	FORUM_SERVICE_PORT string
+	AUTH_PORT             string
+	PROGRESS_SERVICE_PORT string
 
 	DB_HOST     string
 	DB_PORT     int
@@ -33,7 +33,7 @@ func Load() Config {
 	config := Config{}
 
 	config.AUTH_PORT = cast.ToString(coalesce("AUTH_PORT", ":8088"))
-	config.FORUM_SERVICE_PORT = cast.ToString(coalesce("FORUM_SERVICE_PORT", ":50051"))
+	config.PROGRESS_SERVICE_PORT = cast.ToString(coalesce("PROGRESS_SERVICE_PORT", ":50052"))
 
 	config.DB_HOST = cast.ToString(coalesce("DB_HOST", "localhost"))
 	config.DB_PORT = cast.ToInt(coalesce("DB_PORT", 5432))

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 
 	"learning-service/config"
 	"learning-service/storage/managers"
@@ -34,7 +33,7 @@ func NewPostgresStorage(config config.Config) (*Storage, error) {
 	if err = db.Ping(); err != nil {
 		return nil, err
 	}
-
+	fmt.Println("Successfully connected to database pgsql!")
 	// #################     MONGODB CONNECTION     ###################### //
 	clientOptions := options.Client().ApplyURI(config.MONGO_URI)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
@@ -44,12 +43,12 @@ func NewPostgresStorage(config config.Config) (*Storage, error) {
 	if err = client.Ping(context.TODO(), nil); err != nil {
 		return nil, err
 	}
+	fmt.Println("Successfully connected to database mongodb!")
 
 	lm := managers.NewLessonManager(db)
 	em := managers.NewExerciseManager(client, config.MONGO_DB_NAME, config.MONGO_COLLECTION_NAME)
 	vm := managers.NewVocabularyManager(db)
 
-	log.Println("Successfully connected to the database")
 	return &Storage{
 		PgClient:    db,
 		LessonS:     lm,

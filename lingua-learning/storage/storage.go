@@ -19,7 +19,7 @@ type LessonI interface {
 }
 
 type VocabularyI interface {
-	AddTo(*pb.ByID) (*pb.Void, error)
+	AddTo(*pb.ByID, *pb.ExerciseGResUReq) (*pb.Void, error)
 	DeleteFrom(*pb.ByID) (*pb.Void, error)
 	Get(*pb.VocabulariesGAReq) (*pb.VocabulariesGARes, error)
 }

@@ -20,13 +20,14 @@ func main() {
 	em.CheckErr(err)
 	defer db.PgClient.Close()
 
-	listener, err := net.Listen("tcp", config.FORUM_SERVICE_PORT)
+	listener, err := net.Listen("tcp", config.PROGRESS_SERVICE_PORT)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	s := grpc.NewServer()
 	pb.RegisterUserLessonServiceServer(s, service.NewUserLessonService(db))
+	pb.RegisterUserDataServiceServer(s, service.NewUserDataService(db))
 
 	log.Printf("server listening at %v", listener.Addr())
 	if err := s.Serve(listener); err != nil {

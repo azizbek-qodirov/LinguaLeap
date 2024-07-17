@@ -4,6 +4,11 @@ import (
 	"database/sql"
 	"fmt"
 	pb "learning-service/genprotos"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
+	"github.com/lib/pq"
 )
 
 type LessonManager struct {
@@ -19,6 +24,9 @@ func (m *LessonManager) Create(lesson *pb.LessonCReqGRes) (*pb.Void, error) {
 	          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 	_, err := m.Conn.Exec(query, lesson.Id, lesson.Name, lesson.Title, lesson.Content, lesson.Lang_1, lesson.Lang_2, lesson.Level, lesson.Order)
 	if err != nil {
+		if isUniqueConstraintViolation(err) {
+			return nil, status.Errorf(codes.AlreadyExists, "this order number is already used")
+		}
 		return nil, err
 	}
 	return &pb.Void{Success: true}, nil
@@ -122,4 +130,16 @@ func (m *LessonManager) GetAll(req *pb.LessonGAReq) (*pb.LessonGARes, error) {
 	}
 
 	return &pb.LessonGARes{Lessons: lessons}, nil
+}
+
+func isUniqueConstraintViolation(err error) bool {
+	// Check if the error message or code indicates a unique constraint violation.
+	// The implementation will depend on the specific database and driver you are using.
+	// Example for PostgreSQL:
+	if pqErr, ok := err.(*pq.Error); ok {
+		if pqErr.Code == "23505" { // Unique violation error code in PostgreSQL
+			return true
+		}
+	}
+	return false
 }

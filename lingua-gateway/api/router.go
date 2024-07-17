@@ -8,49 +8,45 @@ import (
 
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	_ "api-gateway/api/docs"
-	"api-gateway/api/handlers"
-	"api-gateway/api/middleware"
-	"api-gateway/config/logger"
+	_ "gateway-service/api/docs"
+	"gateway-service/api/handlers"
 )
 
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
-func NewRouter(connF *grpc.ClientConn, logger logger.Logger) *gin.Engine {
-	h := handlers.NewHandler(connF, logger)
+func NewRouter(connL, ConnP *grpc.ClientConn) *gin.Engine {
+	h := handlers.NewHandler(connL, ConnP)
 	router := gin.Default()
 
 	router.GET("/api/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	protected := router.Group("/", middleware.JWTMiddleware())
+	// protected := router.Group("/", middleware.JWTMiddleware())
 
-	// Category routes
-	category := protected.Group("/category")
-	category.POST("/", h.CategoryCreate)
-	category.GET("/:id", h.CategoryGet)
-	category.PUT("/:id", h.CategoryUpdate)
-	category.DELETE("/:id", h.CategoryDelete)
-	protected.GET("/categories", h.CategoryGetAll)
+	lesson := router.Group("/lesson")
+	{
+		lesson.POST("/", h.LessonCreate)
+		lesson.GET("/:id", h.LessonGet)
+		lesson.PUT("/:id", h.LessonUpdate)
+		lesson.DELETE("/:id", h.LessonDelete)
+		router.GET("/lessons", h.LessonGetAll)
+	}
 
-	// Post routes
-	post := protected.Group("/post")
-	post.POST("/", h.PostCreate)
-	post.GET("/:id", h.PostGet)
-	post.PUT("/:id", h.PostUpdate)
-	post.DELETE("/:id", h.PostDelete)
-	protected.GET("/posts", h.PostGetAll)
+	exercise := router.Group("/exercise")
+	{
+		exercise.POST("/", h.ExerciseCreate)
+		exercise.GET("/:id", h.ExerciseGet)
+		exercise.PUT("/:id", h.ExerciseUpdate)
+		exercise.DELETE("/:id", h.ExerciseDelete)
+		router.GET("/exercises", h.ExerciseGetAll)
+	}
 
-	// Comment routes
-	comment := protected.Group("/comment")
-	comment.POST("/", h.CommentCreate)
-	comment.GET("/:id", h.CommentGet)
-	comment.PUT("/:id", h.CommentUpdate)
-	comment.DELETE("/:id", h.CommentDelete)
-	protected.GET("/comments", h.CommentGetAll)
-
-	// Tag routes
-	protected.GET("/popular-tags", h.PopularTagsGet)
+	vocabulary := router.Group("/vocabulary")
+	{
+		vocabulary.POST("/:id", h.AddToVocabulary)
+		vocabulary.DELETE("/:id", h.DeleteFromVocabulary)
+		router.GET("/vocabularies", h.GetVocabularies)
+	}
 
 	return router
 }
