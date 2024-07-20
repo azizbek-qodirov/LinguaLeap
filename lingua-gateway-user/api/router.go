@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/streadway/amqp"
 	"google.golang.org/grpc"
 
 	swaggerFiles "github.com/swaggo/files"
@@ -16,8 +17,8 @@ import (
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
-func NewRouter(connL, ConnP *grpc.ClientConn) *gin.Engine {
-	h := handlers.NewHandler(connL, ConnP)
+func NewRouter(connL, ConnP *grpc.ClientConn, ch *amqp.Channel) *gin.Engine {
+	h := handlers.NewHandler(connL, ConnP, ch)
 	router := gin.Default()
 
 	router.GET("/api/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -25,7 +26,9 @@ func NewRouter(connL, ConnP *grpc.ClientConn) *gin.Engine {
 	protected := router.Group("/", middleware.JWTMiddleware())
 	protected.Use(middleware.IsUserMiddleware())
 
-	router.GET("mydata", h.GetMyData)
+	protected.GET("/mydata", h.GetMyData)
+	protected.POST("/start-test", h.StartTest)
+	protected.GET("/leaderboard", h.GetLeadBoard)
 
 	lesson := protected.Group("/lesson")
 	{

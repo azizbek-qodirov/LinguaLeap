@@ -27,10 +27,10 @@ func (s *UserDataService) UpdateDailyStreak(ctx context.Context, req *pb.StreakU
 	return s.storage.UserData().UpdateDailyStreak(req)
 }
 
-func (s *UserDataService) UpdatePlayedGamesCount(ctx context.Context, req *pb.PlayedGamesCountUReq) (*pb.Void, error) {
-	return s.storage.UserData().UpdatePlayedGamesCount(req)
-}
-
 func (s *UserDataService) UpdateWinningPercentage(ctx context.Context, req *pb.WinningPercentageUReq) (*pb.Void, error) {
 	return s.storage.UserData().UpdateWinningPercentage(req)
+}
+
+func (s *UserDataService) GetLeadBoard(ctx context.Context, req *pb.Void) (*pb.LeadboardRes, error) {
+	return s.storage.UserData().GetLeadBoard(req)
 }

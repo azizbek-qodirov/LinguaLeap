@@ -22,8 +22,8 @@ const (
 	UserDataService_GetUserData_FullMethodName             = "/lingua.UserDataService/GetUserData"
 	UserDataService_UpdateXP_FullMethodName                = "/lingua.UserDataService/UpdateXP"
 	UserDataService_UpdateDailyStreak_FullMethodName       = "/lingua.UserDataService/UpdateDailyStreak"
-	UserDataService_UpdatePlayedGamesCount_FullMethodName  = "/lingua.UserDataService/UpdatePlayedGamesCount"
 	UserDataService_UpdateWinningPercentage_FullMethodName = "/lingua.UserDataService/UpdateWinningPercentage"
+	UserDataService_GetLeadBoard_FullMethodName            = "/lingua.UserDataService/GetLeadBoard"
 )
 
 // UserDataServiceClient is the client API for UserDataService service.
@@ -33,8 +33,8 @@ type UserDataServiceClient interface {
 	GetUserData(ctx context.Context, in *ByID, opts ...grpc.CallOption) (*UserDataGRes, error)
 	UpdateXP(ctx context.Context, in *XPUReq, opts ...grpc.CallOption) (*Void, error)
 	UpdateDailyStreak(ctx context.Context, in *StreakUReq, opts ...grpc.CallOption) (*Void, error)
-	UpdatePlayedGamesCount(ctx context.Context, in *PlayedGamesCountUReq, opts ...grpc.CallOption) (*Void, error)
 	UpdateWinningPercentage(ctx context.Context, in *WinningPercentageUReq, opts ...grpc.CallOption) (*Void, error)
+	GetLeadBoard(ctx context.Context, in *Void, opts ...grpc.CallOption) (*LeadboardRes, error)
 }
 
 type userDataServiceClient struct {
@@ -75,20 +75,20 @@ func (c *userDataServiceClient) UpdateDailyStreak(ctx context.Context, in *Strea
 	return out, nil
 }
 
-func (c *userDataServiceClient) UpdatePlayedGamesCount(ctx context.Context, in *PlayedGamesCountUReq, opts ...grpc.CallOption) (*Void, error) {
+func (c *userDataServiceClient) UpdateWinningPercentage(ctx context.Context, in *WinningPercentageUReq, opts ...grpc.CallOption) (*Void, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Void)
-	err := c.cc.Invoke(ctx, UserDataService_UpdatePlayedGamesCount_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, UserDataService_UpdateWinningPercentage_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userDataServiceClient) UpdateWinningPercentage(ctx context.Context, in *WinningPercentageUReq, opts ...grpc.CallOption) (*Void, error) {
+func (c *userDataServiceClient) GetLeadBoard(ctx context.Context, in *Void, opts ...grpc.CallOption) (*LeadboardRes, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Void)
-	err := c.cc.Invoke(ctx, UserDataService_UpdateWinningPercentage_FullMethodName, in, out, cOpts...)
+	out := new(LeadboardRes)
+	err := c.cc.Invoke(ctx, UserDataService_GetLeadBoard_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -102,8 +102,8 @@ type UserDataServiceServer interface {
 	GetUserData(context.Context, *ByID) (*UserDataGRes, error)
 	UpdateXP(context.Context, *XPUReq) (*Void, error)
 	UpdateDailyStreak(context.Context, *StreakUReq) (*Void, error)
-	UpdatePlayedGamesCount(context.Context, *PlayedGamesCountUReq) (*Void, error)
 	UpdateWinningPercentage(context.Context, *WinningPercentageUReq) (*Void, error)
+	GetLeadBoard(context.Context, *Void) (*LeadboardRes, error)
 	mustEmbedUnimplementedUserDataServiceServer()
 }
 
@@ -120,11 +120,11 @@ func (UnimplementedUserDataServiceServer) UpdateXP(context.Context, *XPUReq) (*V
 func (UnimplementedUserDataServiceServer) UpdateDailyStreak(context.Context, *StreakUReq) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDailyStreak not implemented")
 }
-func (UnimplementedUserDataServiceServer) UpdatePlayedGamesCount(context.Context, *PlayedGamesCountUReq) (*Void, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdatePlayedGamesCount not implemented")
-}
 func (UnimplementedUserDataServiceServer) UpdateWinningPercentage(context.Context, *WinningPercentageUReq) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateWinningPercentage not implemented")
+}
+func (UnimplementedUserDataServiceServer) GetLeadBoard(context.Context, *Void) (*LeadboardRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLeadBoard not implemented")
 }
 func (UnimplementedUserDataServiceServer) mustEmbedUnimplementedUserDataServiceServer() {}
 
@@ -193,24 +193,6 @@ func _UserDataService_UpdateDailyStreak_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserDataService_UpdatePlayedGamesCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PlayedGamesCountUReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserDataServiceServer).UpdatePlayedGamesCount(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserDataService_UpdatePlayedGamesCount_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserDataServiceServer).UpdatePlayedGamesCount(ctx, req.(*PlayedGamesCountUReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _UserDataService_UpdateWinningPercentage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WinningPercentageUReq)
 	if err := dec(in); err != nil {
@@ -225,6 +207,24 @@ func _UserDataService_UpdateWinningPercentage_Handler(srv interface{}, ctx conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserDataServiceServer).UpdateWinningPercentage(ctx, req.(*WinningPercentageUReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserDataService_GetLeadBoard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Void)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserDataServiceServer).GetLeadBoard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserDataService_GetLeadBoard_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserDataServiceServer).GetLeadBoard(ctx, req.(*Void))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -249,12 +249,12 @@ var UserDataService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserDataService_UpdateDailyStreak_Handler,
 		},
 		{
-			MethodName: "UpdatePlayedGamesCount",
-			Handler:    _UserDataService_UpdatePlayedGamesCount_Handler,
-		},
-		{
 			MethodName: "UpdateWinningPercentage",
 			Handler:    _UserDataService_UpdateWinningPercentage_Handler,
+		},
+		{
+			MethodName: "GetLeadBoard",
+			Handler:    _UserDataService_GetLeadBoard_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  gateway-admin:
+    container_name: gateway_admin
+    build: ./
+    ports:
+      - "8000:8000"
+    networks:
+      - global-network
+
+
+networks:
+  global-network:
+    external: true
+    name: global-network
+    driver: bridge

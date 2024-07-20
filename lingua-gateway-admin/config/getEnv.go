@@ -23,7 +23,7 @@ func Load() Config {
 
 	config.HTTP_PORT = cast.ToString(coalesce("HTTP_ADMIN_PORT", ":8080"))
 	config.LEARNING_SERVICE_PORT = cast.ToString(coalesce("LEARNING_SERVICE_PORT", ":50051"))
-	config.PROGRESS_SERVICE_PORT = cast.ToString(coalesce("LEARNING_SERVICE_PORT", ":50052"))
+	config.PROGRESS_SERVICE_PORT = cast.ToString(coalesce("PROGRESS_SERVICE_PORT", ":50052"))
 
 	return config
 }

@@ -24,7 +24,6 @@ func NewRouter(h *handlers.HTTPHandler) *gin.Engine {
 	router.POST("/login", h.Login)
 	router.POST("/forgot-password", h.ForgotPassword)
 	router.POST("/recover-password", h.RecoverPassword)
-	// router.POST("/reset-password", h.ResetPassword)
 
 	protected := router.Group("/", middleware.JWTMiddleware())
 	protected.GET("/profile", h.Profile)

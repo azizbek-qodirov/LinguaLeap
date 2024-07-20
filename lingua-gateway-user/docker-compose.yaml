@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  gateway-user:
+    container_name: gateway_user
+    build: ./
+    ports:
+      - "8080:8080"
+    networks:
+      - global-network
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+
+  rabbitmq:
+    container_name: rabbitmq_gateway
+    image: rabbitmq:management
+    ports:
+      - "5674:5672"
+      - "15674:15672"
+    networks:
+      - global-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  global-network:
+    external: true
+    # name: global-network

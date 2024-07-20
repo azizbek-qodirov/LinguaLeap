@@ -177,53 +177,6 @@ func (h *HTTPHandler) RecoverPassword(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Password successfully updated"})
 }
 
-// // ResetPassword godoc
-// // @Summary Reset password
-// // @Description Resets the password of the user
-// // @Tags auth
-// // @Accept json
-// // @Produce json
-// // @Param req body models.ResetPasswordReq true "Reset password request"
-// // @Success 200 {object} string "Password reset successfully"
-// // @Failure 400 {object} string "Invalid request payload"
-// // @Failure 401 {object} string "Unauthorized"
-// // @Failure 404 {object} string "User not found"
-// // @Failure 500 {object} string "Server error"
-// // @Router /reset-password [post]
-// func (h *HTTPHandler) ResetPassword(c *gin.Context) {
-// 	var req models.ResetPasswordReq
-
-// 	if err := c.BindJSON(&req); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"Invalid request payload": err.Error()})
-// 		return
-// 	}
-
-// 	user, err := h.US.GetProfile(&models.GetProfileReq{Email: req.Email})
-// 	if err != nil {
-// 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-// 		return
-// 	}
-
-// 	if user == nil {
-// 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-// 		return
-// 	}
-
-// 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Server error", "err": err.Error()})
-// 		return
-// 	}
-
-// 	err = h.US.ResetPassword(&models.ResetPasswordReq{Email: req.Email, NewPassword: string(hashedPassword)})
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Server error", "err": err.Error()})
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusOK, gin.H{"message": "Password reset successfully"})
-// }
-
 // GetProfile godoc
 // @Summary Get user profile
 // @Description Get the profile of the authenticated user

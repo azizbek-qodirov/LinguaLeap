@@ -1,4 +1,11 @@
 definitions:
+  genprotos.CheckReq:
+    properties:
+      correct_answer:
+        type: string
+      exercise_id:
+        type: string
+    type: object
   genprotos.ExerciseGARes:
     properties:
       count:
@@ -22,6 +29,30 @@ definitions:
         type: string
       type:
         type: string
+    type: object
+  genprotos.LeadboardRes:
+    properties:
+      users:
+        items:
+          $ref: '#/definitions/genprotos.LeadboardUserRes'
+        type: array
+    type: object
+  genprotos.LeadboardUserRes:
+    properties:
+      daily_streak:
+        type: integer
+      level:
+        type: string
+      native_lang:
+        type: string
+      played_games_count:
+        type: integer
+      user_id:
+        type: string
+      winning_percentage:
+        type: number
+      xp:
+        type: integer
     type: object
   genprotos.LessonCReqGRes:
     properties:
@@ -50,6 +81,26 @@ definitions:
         items:
           $ref: '#/definitions/genprotos.LessonCReqGRes'
         type: array
+    type: object
+  genprotos.TestCheckReqForSwagger:
+    properties:
+      lesson_id:
+        type: string
+      requests:
+        items:
+          $ref: '#/definitions/genprotos.CheckReq'
+        type: array
+    type: object
+  genprotos.TestResultRes:
+    properties:
+      correct_answers_count:
+        type: integer
+      feedback:
+        type: string
+      tests_count:
+        type: integer
+      xp_given:
+        type: integer
     type: object
   genprotos.UserDataGRes:
     properties:
@@ -167,6 +218,27 @@ paths:
       summary: Get all exercises
       tags:
       - Exercise
+  /leaderboard:
+    get:
+      description: Get the leaderboard sorted by XP
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/genprotos.LeadboardRes'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get Leaderboard
+      tags:
+      - leaderboard
   /lesson/{id}:
     get:
       consumes:
@@ -277,6 +349,35 @@ paths:
       summary: Get User Data
       tags:
       - UserData
+  /start-test:
+    post:
+      consumes:
+      - application/json
+      description: Start a test by checking the answers of the provided quiz requests
+        against the exercises of the specified lesson
+      parameters:
+      - description: Test Check Request
+        in: body
+        name: YourAnswers
+        required: true
+        schema:
+          $ref: '#/definitions/genprotos.TestCheckReqForSwagger'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/genprotos.TestResultRes'
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Start a test
+      tags:
+      - quiz
   /vocabularies:
     get:
       consumes:

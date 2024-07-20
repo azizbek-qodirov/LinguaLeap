@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 )
 
 type MyDataResponse struct {
@@ -27,12 +28,19 @@ type MyDataResponse struct {
 // @Security BearerAuth
 // @Router /mydata [get]
 func (s *HTTPHandler) GetMyData(c *gin.Context) {
-	id := &pb.ByID{Id: "here i have to get id from claims"}
-	data, err := s.UserData.GetUserData(c, id)
+	claims, exists := c.Get("claims")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	id := claims.(jwt.MapClaims)["user_id"].(string)
+
+	data, err := s.UserData.GetUserData(c, &pb.ByID{Id: id})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't get user data", "details": err.Error()})
 	}
-	user, err := getUserDetails(id.Id)
+	user, err := getUserDetails(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't fetch user details", "details": err.Error()})
 	}
@@ -40,7 +48,7 @@ func (s *HTTPHandler) GetMyData(c *gin.Context) {
 }
 
 func getUserDetails(userID string) (*models.User, error) {
-	url := fmt.Sprintf("http://localhost:8088/user?id=%s", userID)
+	url := fmt.Sprintf("http://localhost:8088/user/%s", userID)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to call user service: %w", err)
@@ -55,4 +63,54 @@ func getUserDetails(userID string) (*models.User, error) {
 		return nil, fmt.Errorf("failed to decode user details: %w", err)
 	}
 	return &user, nil
+}
+
+// @Summary Get Leaderboard
+// @Description Get the leaderboard sorted by XP
+// @Tags leaderboard
+// @Produce json
+// @Success 200 {object} []pb.LeadboardRes
+// @Failure 500 {object} string
+// @Security BearerAuth
+// @Router /leaderboard [get]
+func (h *HTTPHandler) GetLeadBoard(c *gin.Context) {
+	type UserRes struct {
+		Username string `json:"username"`
+		Email    string `json:"email"`
+	}
+	type LeadBoardRes struct {
+		Level             string
+		NativeLang        string
+		Xp                int64
+		DailyStreak       int32
+		PlayedGamesCount  int64
+		WinningPercentage float32
+		User              *UserRes
+	}
+	leadboard, err := h.UserData.GetLeadBoard(c, &pb.Void{})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ress := []*LeadBoardRes{}
+	res := LeadBoardRes{}
+	for _, v := range leadboard.Users {
+		user, err := getUserDetails(v.UserId)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		res.Level = v.Level
+		res.NativeLang = v.NativeLang
+		res.Xp = v.Xp
+		res.DailyStreak = v.DailyStreak
+		res.PlayedGamesCount = v.PlayedGamesCount
+		res.WinningPercentage = v.WinningPercentage
+		res.User = &UserRes{
+			Username: user.Username,
+			Email:    user.Email,
+		}
+		ress = append(ress, &res)
+	}
+	c.JSON(http.StatusOK, ress)
 }

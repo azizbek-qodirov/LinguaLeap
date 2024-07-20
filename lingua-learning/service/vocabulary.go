@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	pb "learning-service/genprotos"
 	st "learning-service/storage"
@@ -12,6 +13,32 @@ import (
 type VocabularyService struct {
 	storage st.StorageI
 	pb.UnimplementedVocabularyServiceServer
+}
+
+type VocabularyUpdateMessage struct {
+	ExerciseID string `json:"exercise_id"`
+	Action     string `json:"action"`
+}
+
+func (s *VocabularyService) ProcessMessage(body []byte) {
+	fmt.Printf("Received message: %s\n", body)
+	var msg VocabularyUpdateMessage
+	err := json.Unmarshal(body, &msg)
+	if err != nil {
+		fmt.Printf("Error decoding message: %v\n", err)
+		return
+	}
+
+	switch msg.Action {
+	case "add":
+		_, err = s.AddToVocabulary(context.Background(), &pb.ByID{Id: msg.ExerciseID})
+	case "delete":
+		_, err = s.DeleteFromVocabulary(context.Background(), &pb.ByID{Id: msg.ExerciseID})
+	}
+
+	if err != nil {
+		fmt.Printf("Error processing message: %v\n", err)
+	}
 }
 
 func NewVocabularyService(storage st.StorageI) *VocabularyService {

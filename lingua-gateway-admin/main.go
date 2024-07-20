@@ -4,28 +4,20 @@ import (
 	"fmt"
 	"gateway-service/api"
 	cf "gateway-service/config"
-	"path/filepath"
-
-	"runtime"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-)
-
-var (
-	_, b, _, _ = runtime.Caller(0)
-	basepath   = filepath.Dir(b)
 )
 
 func main() {
 	config := cf.Load()
 	em := cf.NewErrorManager()
 
-	LearningConn, err := grpc.NewClient(fmt.Sprintf("localhost%s", config.LEARNING_SERVICE_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	LearningConn, err := grpc.NewClient(fmt.Sprintf("learning_service%s", config.LEARNING_SERVICE_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	em.CheckErr(err)
 	defer LearningConn.Close()
 
-	ProgressConn, err := grpc.NewClient(fmt.Sprintf("localhost%s", config.PROGRESS_SERVICE_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	ProgressConn, err := grpc.NewClient(fmt.Sprintf("progress_service%s", config.PROGRESS_SERVICE_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	em.CheckErr(err)
 	defer LearningConn.Close()
 

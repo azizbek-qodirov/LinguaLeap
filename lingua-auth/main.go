@@ -13,11 +13,11 @@ func main() {
 	cf := config.Load()
 	em := config.NewErrorManager()
 
-	conn, err := postgresql.ConnectDB(&cf)
+	pgsql, mongo, err := postgresql.ConnectDB(&cf)
 	em.CheckErr(err)
-	defer conn.Close()
+	defer pgsql.Close()
 
-	us := service.NewUserService(conn)
+	us := service.NewUserService(pgsql, mongo)
 	handler := handlers.NewHandler(us)
 
 	roter := api.NewRouter(handler)

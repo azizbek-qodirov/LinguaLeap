@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -8,7 +9,33 @@ import (
 	pb "gateway-service/genprotos"
 
 	"github.com/gin-gonic/gin"
+	"github.com/streadway/amqp"
 )
+
+type VocabularyUpdateMessage struct {
+	ExerciseID string `json:"exercise_id"`
+	Action     string `json:"action"`
+}
+
+func (h *HTTPHandler) publishToRabbitMQ(msg VocabularyUpdateMessage) error {
+	body, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+
+	err = h.RabbitMQ.Publish(
+		"progress_updates", // exchange
+		"",                 // routing key
+		false,              // mandatory
+		false,              // immediate
+		amqp.Publishing{
+			ContentType:  "application/json",
+			Body:         body,
+			DeliveryMode: amqp.Persistent,
+		},
+	)
+	return err
+}
 
 // AddToVocabulary handles adding an exercise to the vocabulary.
 // @Summary Add to Vocabulary
@@ -24,11 +51,15 @@ import (
 // @Router /vocabulary/{id} [post]
 func (h *HTTPHandler) AddToVocabulary(c *gin.Context) {
 	id := &pb.ByID{Id: c.Param("id")}
-	_, err := h.Vocabulary.AddToVocabulary(c, id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't add exercise to vocabulary", "details": err.Error()})
+	msg := VocabularyUpdateMessage{
+		ExerciseID: id.Id,
+		Action:     "add",
+	}
+	if err := h.publishToRabbitMQ(msg); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't publish message to RabbitMQ", "details": err.Error()})
 		return
 	}
+
 	c.JSON(http.StatusOK, "Exercise added to vocabulary!!!")
 }
 
@@ -51,6 +82,16 @@ func (h *HTTPHandler) DeleteFromVocabulary(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't delete exercise from vocabulary", "details": err.Error()})
 		return
 	}
+
+	msg := VocabularyUpdateMessage{
+		ExerciseID: id.Id,
+		Action:     "delete",
+	}
+	if err := h.publishToRabbitMQ(msg); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't publish message to RabbitMQ", "details": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusNoContent, "Exercise deleted from vocabulary!!!")
 }
 
@@ -75,7 +116,6 @@ func (h *HTTPHandler) GetVocabularies(c *gin.Context) {
 
 	lessonID := c.Query("lesson_id")
 	exerciseType := c.Query("type")
-
 	limitStr := c.Query("limit")
 	if limitStr == "" {
 		limit = 0

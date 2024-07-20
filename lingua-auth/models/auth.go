@@ -7,11 +7,12 @@ type RegisterReqSwag struct {
 }
 
 type RegisterReq struct {
-	ID       string `json:"id"`       // User's unique identifier
-	Username string `json:"username"` // User's username
-	Email    string `json:"email"`    // User's email address
-	Password string `json:"password"` // User's password
-	Role     string
+	ID         string `json:"id"`       // User's unique identifier
+	Username   string `json:"username"` // User's username
+	Email      string `json:"email"`    // User's email address
+	Password   string `json:"password"` // User's password
+	NativeLang string `json:"native_lang"`
+	Role       string
 }
 
 type LoginReq struct {

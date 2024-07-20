@@ -26,7 +26,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("could not connect to the DB: %v", err)
 	}
 
-	userManager = NewUserManager(db)
+	userManager = NewUserManager(db, nil, "lingua_progress", "user_data")
 
 	fmt.Println("Database connected!!!")
 	code := m.Run()

@@ -1,25 +1,34 @@
 package service
 
 import (
+	"auth-service/config"
 	"auth-service/models"
 	"auth-service/postgresql/managers"
 	"database/sql"
 
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type UserService struct {
 	UM managers.UserManager
 }
 
-func NewUserService(conn *sql.DB) *UserService {
-	return &UserService{UM: *managers.NewUserManager(conn)}
+func NewUserService(PsqlConn *sql.DB, MongoConn *mongo.Client) *UserService {
+	return &UserService{UM: *managers.NewUserManager(PsqlConn, MongoConn, config.Load().MONGO_DB_NAME, config.Load().MONGO_COLLECTION_NAME)}
 }
 
 func (u *UserService) Register(req *models.RegisterReq) error {
 	req.ID = uuid.NewString()
 	req.Role = "user"
-	return u.UM.Register(*req)
+	err := u.UM.RegisterInMongo(req.ID, req.NativeLang)
+	if err != nil {
+		return err
+	}
+	if err := u.UM.Register(*req); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (u *UserService) GetProfile(req *models.GetProfileReq) (*models.GetProfileResp, error) {

@@ -11,6 +11,7 @@ import (
 type Config struct {
 	AUTH_PORT             string
 	PROGRESS_SERVICE_PORT string
+	LEARNING_SERVICE_PORT string
 
 	DB_HOST     string
 	DB_PORT     int
@@ -22,7 +23,7 @@ type Config struct {
 	MONGO_DB_NAME         string
 	MONGO_COLLECTION_NAME string
 
-	LOG_PATH string
+	RABBITMQ_URL string
 }
 
 func Load() Config {
@@ -44,9 +45,9 @@ func Load() Config {
 	config.MONGO_URI = cast.ToString(coalesce("MONGO_URI", "mongodb://localhost:27017"))
 	config.MONGO_DB_NAME = cast.ToString(coalesce("MONGO_DB_NAME", "lingua_learning"))
 	config.MONGO_COLLECTION_NAME = cast.ToString(coalesce("MONGO_COLLECTION_NAME", "exercises"))
+	config.LEARNING_SERVICE_PORT = cast.ToString(coalesce("LEARNING_SERVICE_PORT", ":50051"))
 
-	config.LOG_PATH = cast.ToString(coalesce("LOG_PATH", "logs/info.log"))
-
+	config.RABBITMQ_URL = cast.ToString(coalesce("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/"))
 	return config
 }
 

@@ -130,6 +130,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/leaderboard": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get the leaderboard sorted by XP",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "leaderboard"
+                ],
+                "summary": "Get Leaderboard",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/genprotos.LeadboardRes"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/lesson/{id}": {
             "get": {
                 "security": [
@@ -292,6 +326,51 @@ const docTemplate = `{
                         "description": "Invalid user ID",
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/start-test": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Start a test by checking the answers of the provided quiz requests against the exercises of the specified lesson",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "quiz"
+                ],
+                "summary": "Start a test",
+                "parameters": [
+                    {
+                        "description": "Test Check Request",
+                        "name": "YourAnswers",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/genprotos.TestCheckReqForSwagger"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/genprotos.TestResultRes"
                         }
                     },
                     "500": {
@@ -467,6 +546,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "genprotos.CheckReq": {
+            "type": "object",
+            "properties": {
+                "correct_answer": {
+                    "type": "string"
+                },
+                "exercise_id": {
+                    "type": "string"
+                }
+            }
+        },
         "genprotos.ExerciseGARes": {
             "type": "object",
             "properties": {
@@ -501,6 +591,43 @@ const docTemplate = `{
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "genprotos.LeadboardRes": {
+            "type": "object",
+            "properties": {
+                "users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/genprotos.LeadboardUserRes"
+                    }
+                }
+            }
+        },
+        "genprotos.LeadboardUserRes": {
+            "type": "object",
+            "properties": {
+                "daily_streak": {
+                    "type": "integer"
+                },
+                "level": {
+                    "type": "string"
+                },
+                "native_lang": {
+                    "type": "string"
+                },
+                "played_games_count": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "winning_percentage": {
+                    "type": "number"
+                },
+                "xp": {
+                    "type": "integer"
                 }
             }
         },
@@ -544,6 +671,37 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/genprotos.LessonCReqGRes"
                     }
+                }
+            }
+        },
+        "genprotos.TestCheckReqForSwagger": {
+            "type": "object",
+            "properties": {
+                "lesson_id": {
+                    "type": "string"
+                },
+                "requests": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/genprotos.CheckReq"
+                    }
+                }
+            }
+        },
+        "genprotos.TestResultRes": {
+            "type": "object",
+            "properties": {
+                "correct_answers_count": {
+                    "type": "integer"
+                },
+                "feedback": {
+                    "type": "string"
+                },
+                "tests_count": {
+                    "type": "integer"
+                },
+                "xp_given": {
+                    "type": "integer"
                 }
             }
         },

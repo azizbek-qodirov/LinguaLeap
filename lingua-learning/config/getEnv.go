@@ -21,6 +21,7 @@ type Config struct {
 	MONGO_URI             string
 	MONGO_DB_NAME         string
 	MONGO_COLLECTION_NAME string
+	RABBITMQ_URL          string
 }
 
 func Load() Config {
@@ -42,6 +43,7 @@ func Load() Config {
 	config.MONGO_URI = cast.ToString(coalesce("MONGO_URI", "mongodb://localhost:27017"))
 	config.MONGO_DB_NAME = cast.ToString(coalesce("MONGO_DB_NAME", "lingua_learning"))
 	config.MONGO_COLLECTION_NAME = cast.ToString(coalesce("MONGO_COLLECTION_NAME", "exercises"))
+	config.RABBITMQ_URL = cast.ToString(coalesce("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/"))
 
 	return config
 }
